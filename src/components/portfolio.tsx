@@ -149,7 +149,7 @@ function Reveal({
     }
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries.some((e) => e.isIntersecting)) {
           setOn(true);
           io.disconnect();
         }
@@ -564,12 +564,14 @@ export function About() {
           </Reveal>
           <Reveal delay={160}>
             <dl className="mt-4 divide-y divide-line border border-line">
-              {[
-                ["Lokasi", "Semarang, Indonesia"],
-                ["Email", "Irhamzakkii@gmail.com"],
-                ["Telepon", "085792251325"],
-                ["Status", "Fresh Graduate — terbuka untuk kolaborasi"],
-              ].map(([k, v]) => (
+              {(
+                [
+                  ["Lokasi", "Semarang, Indonesia"],
+                  ["Email", "Irhamzakkii@gmail.com"],
+                  ["Telepon", "085792251325"],
+                  ["Status", "Fresh Graduate — terbuka untuk kolaborasi"],
+                ] as const
+              ).map(([k, v]) => (
                 <div key={k} className="flex items-center justify-between gap-4 px-5 py-3">
                   <dt className="text-[10px] font-semibold tracking-[0.25em] text-mute">{k.toUpperCase()}</dt>
                   <dd className="text-right text-sm">{v}</dd>
