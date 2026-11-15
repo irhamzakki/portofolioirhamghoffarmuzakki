@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import cvAsset from "@/assets/cv-irham.asset.json";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 /* ================= Data ================= */
 
@@ -23,19 +30,29 @@ const TICKER = [
 
 const STATS = [
   { value: "3,59", label: "IPK — Cum Laude" },
-  { value: "2022–2026", label: "S1 Informatika, UNIMUS" },
-  { value: "2 Instansi", label: "Pemerintah & Kampus" },
+  { value: "2022–2026", label: "S1 Informatika | FIKOMDIGI | UNIMUS" },
+  { value: "2 Instansi + 1 Community", label: "Pemerintah, Pendidikan, Sport Community" },
 ];
 
-const PROJECTS = [
+type Project = {
+  no: string;
+  title: string;
+  org: string;
+  period: string;
+  desc: string;
+  tags: string[];
+  documentation: string[];
+};
+
+const PROJECTS: Project[] = [
   {
     no: "01",
     title: "Portal Alumni & Kemahasiswaan",
     org: "Biro Kemahasiswaan UNIMUS",
     period: "Okt 2025 — Sekarang",
     desc: "Menyentralisasi layanan alumni dan kemahasiswaan universitas: merancang arsitektur basis data terintegrasi, membangun antarmuka (UI/UX), serta menerapkan sistem otentikasi akun mahasiswa yang aman pada portal resmi.",
-    tags: ["Database Architecture", "UI/UX", "Authentication", "Web App"],
-    wide: true,
+    tags: ["Database Architecture", "UI/UX", "Authentication", "Web App", "wordpress"],
+    documentation: [],
   },
   {
     no: "02",
@@ -44,6 +61,7 @@ const PROJECTS = [
     period: "Agu — Des 2024",
     desc: "Modul server-side dan antarmuka publik untuk pengelolaan layanan informasi publik serta pengarsipan data instansi, dengan optimasi query SQL dan integrasi RESTful API.",
     tags: ["PHP", "SQL Optimization", "RESTful API", "Git"],
+    documentation: ["/images/ruangku1.jpg", "/images/ruangkuII.jpg", "/images/ruangku3.jpg"],
   },
   {
     no: "03",
@@ -52,6 +70,16 @@ const PROJECTS = [
     period: "2025",
     desc: "Sistem pendataan kegiatan pengabdian masyarakat di lingkungan universitas beserta pengelolaan pembaruannya secara berkala.",
     tags: ["Web App", "Data Management"],
+    documentation: [],
+  },
+  {
+    no: "04",
+    title: "Midcare — Sistem Screening Kesehatan Mental",
+    org: "S1 Informatika - FIKOMDIGI - UNIMUS",
+    period: "2026",
+    desc: "Sistem screening kesehatan mental berbasis web untuk mahasiswa dengan integrasi kuisioner, analisis skor, dan rekomendasi tindak lanjut.",
+    tags: ["Web App", "Data Analysis", "Mental Health Screening", "User Experience"],
+    documentation: ["/images/midcare1.png", "/images/midcare2.png", "/images/midcare3.png"],
   },
 ];
 
@@ -91,8 +119,14 @@ const LEADERSHIP = [
 const TRAININGS = [
   { name: "Seminar & Pelatihan Oracle Academy — Dedomena", year: "2023" },
   { name: "Pelatihan Database Programming with SQL", year: "2023" },
-  { name: "Kuliah Umum: Peluang Teknologi Informasi di Era Industry 4.0 & Society 5.0", year: "2023" },
-  { name: "Pendidikan Dasar Resimen Mahasiswa (MENWA Rindam IV/Diponegoro, Magelang)", year: "2023" },
+  {
+    name: "Kuliah Umum: Peluang Teknologi Informasi di Era Industry 4.0 & Society 5.0",
+    year: "2023",
+  },
+  {
+    name: "Pendidikan Dasar Resimen Mahasiswa (MENWA Rindam IV/Diponegoro, Magelang)",
+    year: "2023",
+  },
   { name: "Diklat Bela Negara — Kementerian Pertahanan RI, Dodiklatpur Klaten", year: "2023" },
   { name: "Program Penguatan Nilai Empat Pilar Kebangsaan — Kesbangpol", year: "2025" },
   { name: "Pelatihan Mentoring Al-Islam & Kemuhammadiyahan — LPPM UNIMUS", year: "2023–2026" },
@@ -105,11 +139,25 @@ const SKILL_GROUPS = [
   },
   {
     title: "Framework & Database",
-    items: ["Laravel", "CodeIgniter", "Bootstrap 5", "Tailwind CSS", "MySQL — Optimization & Triggers"],
+    items: [
+      "Laravel",
+      "CodeIgniter",
+      "Bootstrap 5",
+      "Tailwind CSS",
+      "MySQL — Optimization & Triggers",
+    ],
   },
   {
     title: "Tools & Software",
-    items: ["Git & GitHub", "Postman", "Figma", "Visual Studio Code", "XAMPP", "Canva", "MS Office"],
+    items: [
+      "Git & GitHub",
+      "Postman",
+      "Figma",
+      "Visual Studio Code",
+      "XAMPP",
+      "Canva",
+      "MS Office",
+    ],
   },
 ];
 
@@ -186,7 +234,9 @@ function SectionHead({
         <p className="text-xs font-semibold tracking-[0.35em] text-cine">{index}</p>
       </Reveal>
       <Reveal delay={60}>
-        <h2 className="mt-3 font-display text-4xl leading-none tracking-wide md:text-6xl">{title}</h2>
+        <h2 className="mt-3 font-display text-4xl leading-none tracking-wide md:text-6xl">
+          {title}
+        </h2>
       </Reveal>
       {subtitle ? (
         <Reveal delay={120}>
@@ -303,8 +353,12 @@ export function Header() {
           aria-label="Buka menu"
           className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 border border-line lg:hidden"
         >
-          <span className={`h-px w-5 bg-paper transition-transform ${open ? "translate-y-[3.5px] rotate-45" : ""}`} />
-          <span className={`h-px w-5 bg-paper transition-transform ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`} />
+          <span
+            className={`h-px w-5 bg-paper transition-transform ${open ? "translate-y-[3.5px] rotate-45" : ""}`}
+          />
+          <span
+            className={`h-px w-5 bg-paper transition-transform ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`}
+          />
         </button>
       </div>
 
@@ -351,12 +405,24 @@ export function Header() {
 function PhotoCard() {
   return (
     <div className="relative mx-auto w-full max-w-sm">
-      <div className="absolute -left-4 -top-4 h-full w-full border border-cine/40" aria-hidden="true" />
-      <div className="relative flex aspect-[4/5] flex-col items-center justify-center border border-line bg-card">
-        <span className="font-display text-8xl leading-none tracking-wide text-paper md:text-9xl">IGM</span>
-        <span className="mt-4 font-hand text-2xl text-mute">foto profil — segera</span>
+      <div
+        className="absolute -left-4 -top-4 h-full w-full border border-cine/40"
+        aria-hidden="true"
+      />
+
+      <div className="relative aspect-[4/5] overflow-hidden border border-line bg-card">
+        <img
+          src="/images/pp3.png"
+          alt="Foto profil Irham Ghoffar Muzakki"
+          className="h-full w-full object-cover object-center"
+        />
       </div>
-      <div className="absolute -bottom-4 -right-4 h-full w-full border border-line" aria-hidden="true" />
+
+      <div
+        className="absolute -bottom-4 -right-4 h-full w-full border border-line"
+        aria-hidden="true"
+      />
+
       <p className="mt-8 text-center text-[10px] font-semibold tracking-[0.35em] text-mute">
         SEMARANG, INDONESIA
       </p>
@@ -396,13 +462,13 @@ export function Hero() {
               IRHAM GHOFFAR MUZAKKI
             </p>
             <p className="mt-1 text-xs font-semibold tracking-[0.25em] text-mute">
-              INFORMATICS FRESH GRADUATE — FULL-STACK WEB · DATA SCIENCE · MACHINE LEARNING
+              INFORMATICS FRESH GRADUATE — FULL-STACK DEVELOPMENT · DATA SCIENCE · MACHINE LEARNING · DATA ANALYTICS · LEADERSHIP
             </p>
           </Reveal>
           <Reveal delay={220}>
             <p className="mt-5 max-w-xl text-sm leading-relaxed text-mute">
-              Saya Irham Ghoffar Muzakki, fresh graduate S1 Informatika dengan fokus pada pengembangan
-              aplikasi web, manajemen basis data, serta penerapan Data Science dan Machine Learning.
+              Saya Irham Ghoffar Muzakki, fresh graduate S1 Informatika dengan fokus pada
+              pengembangan aplikasi web, memiliki keahlian dalam pengembangan aplikasi web Full-Stack (Frontend & Backend), arsitektur basis data, serta penerapan Data Science dan Machine Learning. Berpengalaman di instansi pemerintah dan kampus, saya terbiasa mengembangkan modul web instansi (Ruangku), mengoptimalkan query basis data MySQL, merancang RESTful API, serta mengelola portal digital dan layanan kemahasiswaan.
             </p>
           </Reveal>
           <Reveal delay={260}>
@@ -422,7 +488,9 @@ export function Hero() {
               {STATS.map((s) => (
                 <div key={s.label}>
                   <dt className="font-display text-2xl text-paper md:text-3xl">{s.value}</dt>
-                  <dd className="mt-1 text-[10px] font-semibold tracking-[0.2em] text-mute">{s.label}</dd>
+                  <dd className="mt-1 text-[10px] font-semibold tracking-[0.2em] text-mute">
+                    {s.label}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -439,7 +507,10 @@ export function Hero() {
           {[0, 1].map((copy) => (
             <div key={copy} className="flex items-center gap-10" aria-hidden={copy === 1}>
               {TICKER.map((t) => (
-                <span key={t} className="flex items-center gap-10 font-display text-lg tracking-widest text-mute">
+                <span
+                  key={t}
+                  className="flex items-center gap-10 font-display text-lg tracking-widest text-mute"
+                >
                   {t}
                   <span className="text-cine">◆</span>
                 </span>
@@ -454,42 +525,259 @@ export function Hero() {
 
 /* ================= Selected Work ================= */
 
+const POSTER_PROJECT: Project = {
+  no: "05",
+  org: "GRAPHIC DESIGN",
+  period: "2024 — PRESENT",
+  title: "Poster & Visual Design",
+  desc: "A collection of visual communication designs, event posters, promotional materials, and creative layouts designed to deliver meaningful messages through visual storytelling.",
+  tags: ["Graphic Design", "Poster Design", "Typography", "Visual Communication"],
+  documentation: [
+    "/images/img1.jpeg",
+    "/images/img2.jpeg",
+    "/images/foto3.jpeg",
+    "/images/img4.png",
+    "/images/img5.png",
+    "/images/img6.png",
+  ],
+};
+
 export function Work() {
+  const allProjects: Project[] = [...PROJECTS, POSTER_PROJECT];
+
   return (
-    <section id="work" className="scroll-mt-20 border-t border-line py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        <SectionHead
-          index="01 — PROJECTS"
-          title="SELECTED WORK"
-          subtitle="Projects that turn ideas into solutions."
-        />
-        <div className="grid gap-px border border-line bg-line md:grid-cols-3">
-          {PROJECTS.map((p, i) => (
-            <Reveal
-              key={p.no}
-              delay={i * 80}
-              className={`bg-card p-8 md:p-10 ${p.wide ? "md:col-span-2" : ""}`}
-            >
-              <article className="flex h-full flex-col">
-                <p className="font-display text-3xl text-cine/70">{p.no}</p>
-                <h3 className="mt-4 font-display text-2xl tracking-wide">{p.title}</h3>
-                <p className="mt-2 text-xs font-semibold tracking-[0.2em] text-mute">
-                  {p.org} — {p.period}
-                </p>
-                <p className="mt-4 flex-1 text-sm leading-relaxed text-mute">{p.desc}</p>
-                <ul className="mt-6 flex flex-wrap gap-2">
-                  {p.tags.map((t) => (
-                    <li
-                      key={t}
-                      className="border border-line px-2.5 py-1 text-[10px] font-semibold tracking-[0.15em] text-mute"
+    <section
+      id="work"
+      className="relative scroll-mt-20 overflow-hidden border-t border-line py-24 md:py-32"
+    >
+      <div className="mx-auto max-w-7xl px-6">
+        {/* SECTION HEADING */}
+        <div className="mb-14 flex flex-col justify-between gap-6 md:mb-20 md:flex-row md:items-end">
+          <div>
+            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.35em] text-cine">
+              01 — PROJECTS / PORTFOLIO
+            </p>
+
+            <h2 className="font-display text-5xl tracking-tight md:text-7xl">
+              SELECTED
+              <span className="block text-cine">WORK.</span>
+            </h2>
+          </div>
+
+          <p className="max-w-sm text-sm leading-7 text-mute">
+            A collection of creative ideas, digital experiences, and visual projects built with
+            purpose and attention to detail.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2 md:gap-6">
+          {allProjects.map((p, i) => {
+            return (
+              <Reveal key={p.no} delay={i * 100}>
+                <article
+                  className="
+                    group relative flex h-full flex-col
+                    overflow-hidden border border-line bg-card
+                    transition-all duration-500 ease-out
+                    hover:border-cine/60
+                    hover:shadow-[0_20px_60px_rgba(0,0,0,0.10)]
+                  "
+                >
+                  {/* BACKGROUND GLOW */}
+                  <div
+                    className="
+                      pointer-events-none absolute -right-20 -top-20
+                      h-56 w-56 rounded-full bg-cine/5 blur-3xl
+                      transition-all duration-700
+                      group-hover:scale-150 group-hover:bg-cine/15
+                    "
+                  />
+
+                  {/* PROJECT INFORMATION */}
+                  <div
+                    className="
+                    relative z-10 flex flex-1 flex-col
+                    p-6 md:p-8
+                  "
+                  >
+                    {/* TOP INFORMATION */}
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="
+                        font-display text-4xl text-cine/50
+                        transition-all duration-500
+                        group-hover:translate-x-2
+                        group-hover:text-cine
+                      "
+                      >
+                        {p.no}
+                      </span>
+
+                      <span
+                        className="
+                        border border-line px-3 py-1
+                        text-[9px] font-semibold tracking-[0.2em]
+                        text-mute transition-colors duration-300
+                        group-hover:border-cine/50
+                        group-hover:text-cine
+                      "
+                      >
+                        PROJECT {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+
+                    {/* PROJECT CONTENT */}
+                    <div className="mt-8">
+                      <p
+                        className="
+                        mb-3 text-[10px] font-bold uppercase
+                        tracking-[0.2em] text-cine
+                      "
+                      >
+                        {p.org}
+                        <span className="mx-2 text-mute">/</span>
+                        <span className="text-mute">{p.period}</span>
+                      </p>
+
+                      <h3
+                        className="
+                        font-display text-2xl leading-tight tracking-wide
+                        transition-transform duration-500
+                        group-hover:translate-x-1
+                        md:text-3xl
+                      "
+                      >
+                        {p.title}
+                      </h3>
+
+                      <p
+                        className="
+                        mt-4 text-sm leading-7 text-mute
+                        transition-colors duration-300
+                        group-hover:text-foreground
+                      "
+                      >
+                        {p.desc}
+                      </p>
+                    </div>
+
+                    {/* PROJECT TAGS */}
+                    <ul className="mt-7 flex flex-wrap gap-2">
+                      {p.tags.map((tag) => (
+                        <li
+                          key={tag}
+                          className="
+                            border border-line px-3 py-1.5
+                            text-[9px] font-semibold uppercase
+                            tracking-[0.12em] text-mute
+                            transition-all duration-300
+                            group-hover:border-cine/30
+                            group-hover:text-cine
+                          "
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="relative z-10 border-t border-line bg-background/50 px-6 py-6 md:px-8 md:py-7">
+                    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-cine">
+                          Project {p.no} / Documentation
+                        </p>
+                        <h4 className="mt-1 font-display text-lg tracking-wide">
+                          DOKUMENTASI PROYEK
+                        </h4>
+                      </div>
+                      {p.documentation.length > 0 ? (
+                        <span className="text-[10px] font-semibold tracking-[0.15em] text-mute">
+                          {String(p.documentation.length).padStart(2, "0")} VISUAL
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-semibold tracking-[0.15em] text-mute">
+                          BELUM TERSEDIA
+                        </span>
+                      )}
+                    </div>
+
+                    <Carousel
+                      opts={{ align: "start", loop: p.documentation.length > 1 }}
+                      aria-label={`Dokumentasi ${p.title}`}
+                      className="mx-auto max-w-md"
                     >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            </Reveal>
-          ))}
+                      <CarouselContent>
+                        {p.documentation.length > 0 ? (
+                          p.documentation.map((image, imageIndex) => (
+                            <CarouselItem key={image}>
+                              <div className="relative flex aspect-[16/9] items-center justify-center overflow-hidden border border-line bg-card">
+                                <img
+                                  src={image}
+                                  alt={`${p.title} — dokumentasi ${imageIndex + 1}`}
+                                  loading="lazy"
+                                  className="h-full w-full object-contain"
+                                />
+                                <span className="absolute bottom-3 left-3 bg-background/90 px-3 py-1.5 text-[9px] font-semibold tracking-[0.15em] text-foreground">
+                                  DOKUMENTASI {String(imageIndex + 1).padStart(2, "0")}
+                                </span>
+                              </div>
+                            </CarouselItem>
+                          ))
+                        ) : (
+                          <CarouselItem>
+                            <div className="flex aspect-[16/9] flex-col items-center justify-center border border-dashed border-line bg-card px-6 text-center">
+                              <span className="font-display text-3xl text-cine/60">{p.no}</span>
+                              <p className="mt-3 text-sm font-semibold">
+                                Dokumentasi visual belum tersedia
+                              </p>
+                              <p className="mt-1 max-w-md text-xs leading-6 text-mute">
+                                Dokumentasi untuk proyek ini dapat ditambahkan ke galeri saat aset
+                                visualnya tersedia.
+                              </p>
+                            </div>
+                          </CarouselItem>
+                        )}
+                      </CarouselContent>
+                      {p.documentation.length > 1 ? (
+                        <>
+                          <CarouselPrevious
+                            aria-label={`Dokumentasi sebelumnya untuk ${p.title}`}
+                            className="left-3 top-1/2 z-10 -translate-y-1/2 border-line bg-background/90 text-foreground hover:bg-background"
+                          />
+                          <CarouselNext
+                            aria-label={`Dokumentasi berikutnya untuk ${p.title}`}
+                            className="right-3 top-1/2 z-10 -translate-y-1/2 border-line bg-background/90 text-foreground hover:bg-background"
+                          />
+                        </>
+                      ) : null}
+                    </Carousel>
+                  </div>
+
+                  {/* BOTTOM ACCENT */}
+                  <div
+                    className="
+                    absolute bottom-0 left-0 h-[2px] w-0
+                    bg-cine transition-all duration-700
+                    group-hover:w-full
+                  "
+                  />
+                </article>
+              </Reveal>
+            );
+          })}
+        </div>
+
+        {/* BOTTOM NOTE */}
+        <div
+          className="
+          mt-12 flex flex-col justify-between gap-3
+          border-t border-line pt-6
+          text-[10px] font-semibold tracking-[0.2em]
+          text-mute sm:flex-row
+        "
+        >
+
         </div>
       </div>
     </section>
@@ -515,15 +803,15 @@ export function About() {
           <Reveal delay={80}>
             <p className="mt-4 text-sm leading-relaxed text-mute">
               Berpengalaman di instansi pemerintah dan kampus, saya terbiasa mengembangkan modul web
-              instansi (Ruangku), mengoptimalkan query basis data MySQL, merancang RESTful API, serta
-              mengelola portal digital dan layanan kemahasiswaan.
+              instansi (Ruangku), mengoptimalkan query basis data MySQL, merancang RESTful API,
+              serta mengelola portal digital dan layanan kemahasiswaan.
             </p>
           </Reveal>
           <Reveal delay={140}>
             <p className="mt-4 text-sm leading-relaxed text-mute">
               Dengan keterampilan komunikasi, analisis sistem, dan penyelesaian masalah yang baik,
-              saya berkomitmen memberikan kontribusi terbaik untuk mendukung perkembangan dan inovasi
-              teknologi.
+              saya berkomitmen memberikan kontribusi terbaik untuk mendukung perkembangan dan
+              inovasi teknologi.
             </p>
           </Reveal>
           <Reveal delay={200}>
@@ -547,7 +835,10 @@ export function About() {
               </div>
               <p className="mt-1 text-sm text-mute">Universitas Muhammadiyah Semarang</p>
               <p className="mt-2 font-display text-2xl text-cine">
-                IPK 3,59 <span className="font-body text-xs font-semibold tracking-[0.2em] text-mute">CUM LAUDE</span>
+                IPK 3,59{" "}
+                <span className="font-body text-xs font-semibold tracking-[0.2em] text-mute">
+                  CUM LAUDE
+                </span>
               </p>
             </Reveal>
             <Reveal delay={80} className="bg-card p-6">
@@ -568,12 +859,14 @@ export function About() {
                 [
                   ["Lokasi", "Semarang, Indonesia"],
                   ["Email", "Irhamzakkii@gmail.com"],
-                  ["Telepon", "085792251325"],
+                  ["Telepon", "081529274064"],
                   ["Status", "Fresh Graduate — terbuka untuk kolaborasi"],
                 ] as const
               ).map(([k, v]) => (
                 <div key={k} className="flex items-center justify-between gap-4 px-5 py-3">
-                  <dt className="text-[10px] font-semibold tracking-[0.25em] text-mute">{k.toUpperCase()}</dt>
+                  <dt className="text-[10px] font-semibold tracking-[0.25em] text-mute">
+                    {k.toUpperCase()}
+                  </dt>
                   <dd className="text-right text-sm">{v}</dd>
                 </div>
               ))}
@@ -622,7 +915,9 @@ export function Experience() {
         <div className="mt-16 grid gap-12 md:grid-cols-2">
           <div>
             <Reveal>
-              <h3 className="text-xs font-semibold tracking-[0.35em] text-cine">KEPEMIMPINAN &amp; ORGANISASI</h3>
+              <h3 className="text-xs font-semibold tracking-[0.35em] text-cine">
+                KEPEMIMPINAN &amp; ORGANISASI
+              </h3>
             </Reveal>
             <Reveal delay={80}>
               <ul className="mt-5 divide-y divide-line border border-line">
@@ -637,7 +932,9 @@ export function Experience() {
           </div>
           <div>
             <Reveal>
-              <h3 className="text-xs font-semibold tracking-[0.35em] text-cine">PELATIHAN &amp; SERTIFIKASI</h3>
+              <h3 className="text-xs font-semibold tracking-[0.35em] text-cine">
+                PELATIHAN &amp; SERTIFIKASI
+              </h3>
             </Reveal>
             <Reveal delay={80}>
               <ul className="mt-5 divide-y divide-line border border-line">
@@ -721,20 +1018,24 @@ export function Contact() {
         <Reveal delay={120}>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-mute">
             Terbuka untuk peluang karier, proyek pengembangan web, dan kolaborasi di bidang Data
-            Science maupun Machine Learning. Hubungi saya melalui kanal di bawah.
+            Science, Machine Learning, Desain Poster, Typografi. Hubungi saya melalui kanal di
+            bawah.
           </p>
         </Reveal>
         <Reveal delay={180}>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <PrimaryButton href="mailto:Irhamzakkii@gmail.com">IRHAMZAKKII@GMAIL.COM</PrimaryButton>
-            <GhostButton href="tel:+6285792251325">0857 9225 1325</GhostButton>
+            <PrimaryButton href="mailto:Irhamzakkii@gmail.com">Irhamzakkii@gmail.com</PrimaryButton>
+            <GhostButton href="wa.me/6281529274064">0815 2927 4064</GhostButton>
           </div>
         </Reveal>
         <Reveal delay={240}>
           <div className="mx-auto mt-10 grid max-w-2xl gap-px border border-line bg-line md:grid-cols-4">
             {[
               ...SOCIALS.map((s) => ({ label: s.label, href: s.href })),
-              { label: "Portofolio Drive", href: "https://drive.google.com/drive/folders/13YUGtzvoUeifO3h2C8U9Sc2VgLR1e4la?usp=sharing" },
+              {
+                label: "Portofolio Drive",
+                href: "https://drive.google.com/drive/folders/13YUGtzvoUeifO3h2C8U9Sc2VgLR1e4la?usp=sharing",
+              },
             ].map((l) => (
               <a
                 key={l.label}
@@ -763,7 +1064,9 @@ export function Footer() {
           IRHAM <span className="text-cine">G. M.</span>
         </span>
         <span>© 2026 Irham Ghoffar Muzakki — Semarang, Indonesia</span>
-        <span className="font-hand text-lg">Turning ideas into functional digital experiences.</span>
+        <span className="font-hand text-lg">
+          Turning ideas into functional digital experiences.
+        </span>
       </div>
     </footer>
   );
